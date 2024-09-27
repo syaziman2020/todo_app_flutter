@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list_hive/core/constants/app_colors.dart';
-import 'package:todo_list_hive/core/constants/font_styles.dart';
-import 'package:todo_list_hive/core/extensions/size_extension.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/font_styles.dart';
+import '../../../core/extensions/size_extension.dart';
 
 class CardCategory extends StatelessWidget {
   CardCategory({
