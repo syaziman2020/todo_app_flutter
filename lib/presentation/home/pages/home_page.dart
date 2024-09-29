@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/font_styles.dart';
 import '../../../core/extensions/size_extension.dart';
@@ -106,8 +105,9 @@ class _HomePageState extends State<HomePage> {
                                             selectedTime.hour,
                                             selectedTime.minute,
                                           );
-                                          print(
-                                              selectedDateTime); // You can use the selectedDateTime as needed.
+                                          if (kDebugMode) {
+                                            print(selectedDateTime);
+                                          } // You can use the selectedDateTime as needed.
                                         }
                                       });
                                     }
@@ -138,8 +138,9 @@ class _HomePageState extends State<HomePage> {
                                           selectedTime.hour,
                                           selectedTime.minute,
                                         );
-                                        print(
-                                            selectedRemind); // You can use the selectedDateTime as needed.
+                                        if (kDebugMode) {
+                                          print(selectedRemind);
+                                        } // You can use the selectedDateTime as needed.
                                       }
                                     });
                                   }
@@ -281,9 +282,9 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: [
                   10.w,
-                  CardDate(day: 'Mon', dd: 11),
-                  CardDate(day: 'Mon', dd: 11),
-                  CardDate(day: 'Mon', dd: 11, status: true),
+                  const CardDate(day: 'Mon', dd: 11),
+                  const CardDate(day: 'Mon', dd: 11),
+                  const CardDate(day: 'Mon', dd: 11, status: true),
                 ],
               ),
             ),
@@ -318,7 +319,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              children: [
+              children: const [
                 CardTask(
                   task: "Helloo",
                 ),

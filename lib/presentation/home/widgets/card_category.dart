@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/font_styles.dart';
 import '../../../core/extensions/size_extension.dart';
 
 class CardCategory extends StatelessWidget {
-  CardCategory({
+  const CardCategory({
     super.key,
     required this.onTap,
     required this.title,

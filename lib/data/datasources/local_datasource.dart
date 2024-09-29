@@ -29,4 +29,9 @@ class LocalDatasource {
     var box = await Hive.openBox('task');
     await box.putAt(index, updatedTask);
   }
+
+  Future<void> deleteTaskAtIndex(int index) async {
+    var box = await Hive.openBox('task');
+    await box.deleteAt(index);
+  }
 }
