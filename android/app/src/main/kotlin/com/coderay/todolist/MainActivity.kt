@@ -1,4 +1,4 @@
-package com.example.todo_list_hive
+package com.coderay.todolist
 
 import io.flutter.embedding.android.FlutterActivity
 
