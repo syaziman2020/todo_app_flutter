@@ -4,26 +4,32 @@ sealed class TaskEvent extends Equatable {
   const TaskEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadAllTasks extends TaskEvent {}
 
-class GetTaskAtIndex extends TaskEvent {
-  final int index;
-  const GetTaskAtIndex(this.index);
+class DailyTasks extends TaskEvent {}
 
-  @override
-  List<Object> get props => [index];
-}
+class OverdueTasks extends TaskEvent {}
 
 class UpdateTaskAtIndex extends TaskEvent {
-  final int index;
+  final String id;
   final TaskModel model;
-  const UpdateTaskAtIndex(this.index, this.model);
+  const UpdateTaskAtIndex(this.id, this.model);
 
   @override
-  List<Object> get props => [index, model];
+  List<Object> get props => [id, model];
+}
+
+class ChangeTaskAtIndex extends TaskEvent {
+  final String? id;
+  final bool status;
+
+  const ChangeTaskAtIndex(this.id, this.status);
+
+  @override
+  List<Object?> get props => [id, status];
 }
 
 class AddTask extends TaskEvent {
@@ -35,6 +41,9 @@ class AddTask extends TaskEvent {
 }
 
 class DeleteTaskAtIndex extends TaskEvent {
-  final int index;
-  const DeleteTaskAtIndex(this.index);
+  final String id;
+  const DeleteTaskAtIndex(this.id);
+
+  @override
+  List<Object> get props => [id];
 }
