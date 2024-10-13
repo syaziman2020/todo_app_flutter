@@ -9,11 +9,11 @@ class TaskModel {
   @HiveField(1)
   final String title;
   @HiveField(2)
-  final DateTime? dateTime;
+  DateTime? dateTime;
   @HiveField(3)
-  final DateTime? remind;
+  DateTime? remind;
   @HiveField(4)
-  final bool status;
+  bool status;
   @HiveField(5)
   final bool repeat;
 

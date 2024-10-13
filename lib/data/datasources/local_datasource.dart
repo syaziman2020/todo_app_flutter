@@ -97,32 +97,47 @@ class LocalDatasource {
       TaskModel updatedTask = TaskModel(
         uid: currentTask.uid,
         dateTime: (newStatus == true && currentTask.repeat == true)
-            ? (currentTask.dateTime!.isBefore(DateTime.now())
+            ? DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    currentTask.dateTime!.hour,
+                    currentTask.dateTime!.minute)
+                .add(currentTask.dateTime!.isBefore(DateTime.now())
+                    ? const Duration(
+                        days: 1) // Tambahkan 1 hari jika waktu sudah lewat
+                    : const Duration(
+                        days:
+                            1)) // Tetap tambahkan 1 hari jika waktu belum lewat
+            : (newStatus == false && currentTask.repeat == true)
                 ? DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month,
-                        DateTime.now().day,
-                        currentTask.dateTime!.hour,
-                        currentTask.dateTime!.minute)
-                    .add(const Duration(days: 1)) // Set ke hari berikutnya
-                : currentTask.dateTime
-                    ?.add(const Duration(days: 1))) // Tetap tambahkan 1 hari
-            : currentTask.dateTime,
-        remind: (currentTask.remind != null)
-            ? (newStatus == true && currentTask.repeat == true)
-                ? (currentTask.remind!.isBefore(DateTime.now())
-                    ? DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            DateTime.now().day,
-                            currentTask.remind!.hour,
-                            currentTask.remind!.minute)
-                        .add(const Duration(days: 1)) // Set ke hari berikutnya
-                    : currentTask.remind?.add(
-                        const Duration(days: 1),
-                      )) // Tetap tambahkan 1 hari
-                : currentTask.remind
-            : currentTask.remind,
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    currentTask.dateTime!.hour,
+                    currentTask.dateTime!.minute)
+                : currentTask.dateTime,
+        remind: (newStatus == true && currentTask.repeat == true)
+            ? DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    currentTask.remind!.hour,
+                    currentTask.remind!.minute)
+                .add(currentTask.remind!.isBefore(DateTime.now())
+                    ? const Duration(
+                        days: 1) // Tambahkan 1 hari jika waktu sudah lewat
+                    : const Duration(
+                        days:
+                            1)) // Tetap tambahkan 1 hari jika waktu belum lewat
+            : (newStatus == false && currentTask.repeat == true)
+                ? DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    currentTask.remind!.hour,
+                    currentTask.remind!.minute)
+                : currentTask.remind,
         title: currentTask.title,
         repeat: currentTask.repeat,
         status: newStatus,
@@ -135,5 +150,36 @@ class LocalDatasource {
   Future<void> deleteTaskAtIndex(String id) async {
     var box = await Hive.openBox('task');
     await box.delete(id);
+  }
+
+  Future<void> changeTaskClosedApp() async {
+    var box = await Hive.openBox('task');
+    List<TaskModel?> tasks = box.values.toList().cast<TaskModel?>();
+    List<TaskModel?> repeatedTasks =
+        tasks.where((task) => task?.repeat == true).toList();
+
+    for (var task in repeatedTasks) {
+      if (task != null && task.dateTime != null) {
+        DateTime now = DateTime.now();
+        DateTime today = DateTime(now.year, now.month, now.day);
+        DateTime taskDateTime = task.dateTime!;
+        DateTime? taskRemind = task.remind;
+        DateTime todayTaskTime = DateTime(now.year, now.month, now.day,
+            taskDateTime.hour, taskDateTime.minute);
+
+        if (todayTaskTime.isBefore(today)) {
+          task.dateTime = todayTaskTime;
+          task.status = false;
+        }
+
+        if (task.remind != null) {
+          DateTime todayTaskRemind = DateTime(now.year, now.month, now.day,
+              taskRemind!.hour, taskRemind.minute);
+          if (todayTaskRemind.isBefore(today)) {
+            task.remind = todayTaskRemind;
+          }
+        }
+      }
+    }
   }
 }

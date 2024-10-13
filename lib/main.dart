@@ -4,11 +4,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'presentation/home/pages/splash_page.dart';
 import 'data/datasources/local_datasource.dart';
 import 'presentation/home/bloc/task_bloc.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'data/models/task_model.dart';
-import 'presentation/home/pages/home_page.dart';
+import 'package:workmanager/workmanager.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    LocalDatasource localDatasource = LocalDatasource();
+    print("Task started: $task");
+    await localDatasource.changeTaskClosedApp();
+
+    return Future.value(true);
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +41,12 @@ void main() async {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ),
   );
-  // Request permission for Android 13+ devices
+
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.requestNotificationsPermission();
+  Workmanager().initialize(callbackDispatcher);
   runApp(const MyApp());
 }
 
@@ -46,7 +59,7 @@ class MyApp extends StatelessWidget {
       create: (context) => TaskBloc(localDatasource: LocalDatasource()),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: SplashPage(),
       ),
     );
   }

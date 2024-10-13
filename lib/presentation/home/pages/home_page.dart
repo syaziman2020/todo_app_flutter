@@ -2,11 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:todo_list_hive/data/models/task_model.dart';
-import 'package:todo_list_hive/presentation/home/bloc/task_bloc.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/font_styles.dart';
 import '../../../core/extensions/size_extension.dart';
+import '../../../data/models/task_model.dart';
+import '../bloc/task_bloc.dart';
 import '../widgets/card_category.dart';
 import '../widgets/card_date.dart';
 import '../widgets/card_task.dart';
@@ -148,14 +149,13 @@ class _HomePageState extends State<HomePage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(2.0),
                             ),
-                            side: MaterialStateBorderSide.resolveWith(
+                            side: WidgetStateBorderSide.resolveWith(
                               (states) => const BorderSide(
                                 width: 1.0,
                                 color: AppColors.primary,
                               ),
                             ),
-                            fillColor:
-                                MaterialStateProperty.all(AppColors.white),
+                            fillColor: WidgetStateProperty.all(AppColors.white),
                             checkColor: AppColors.primary,
                             value: repeat,
                             onChanged: (val) {
@@ -241,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ).copyWith(
-                        overlayColor: MaterialStateProperty.all(
+                        overlayColor: WidgetStateProperty.all(
                           Colors.transparent,
                         ), // Set splash color
                       ),
@@ -263,6 +263,13 @@ class _HomePageState extends State<HomePage> {
                         } else if (selectedDateTime == null) {
                           snackBarCustom(
                               context, 'Please select your datetime');
+                        } else if (selectedDateTime!.isBefore(DateTime.now())) {
+                          snackBarCustom(context,
+                              'The selected date and time have passed. Please choose a valid time.');
+                        } else if (selectedRemind != null &&
+                            selectedRemind!.isBefore(DateTime.now())) {
+                          snackBarCustom(context,
+                              'The selected date and time have passed. Please choose a valid time.');
                         } else {
                           context.read<TaskBloc>().add(
                                 AddTask(
@@ -283,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ).copyWith(
-                        overlayColor: MaterialStateProperty.all(
+                        overlayColor: WidgetStateProperty.all(
                           Colors.transparent,
                         ), // Set splash color
                       ),
@@ -427,14 +434,13 @@ class _HomePageState extends State<HomePage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(2.0),
                             ),
-                            side: MaterialStateBorderSide.resolveWith(
+                            side: WidgetStateBorderSide.resolveWith(
                               (states) => const BorderSide(
                                 width: 1.0,
                                 color: AppColors.primary,
                               ),
                             ),
-                            fillColor:
-                                MaterialStateProperty.all(AppColors.white),
+                            fillColor: WidgetStateProperty.all(AppColors.white),
                             checkColor: AppColors.primary,
                             value: repeat,
                             onChanged: (val) {
@@ -520,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ).copyWith(
-                        overlayColor: MaterialStateProperty.all(
+                        overlayColor: WidgetStateProperty.all(
                           Colors.transparent,
                         ), // Set splash color
                       ),
@@ -564,7 +570,7 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ).copyWith(
-                        overlayColor: MaterialStateProperty.all(
+                        overlayColor: WidgetStateProperty.all(
                           Colors.transparent,
                         ), // Set splash color
                       ),
@@ -608,7 +614,7 @@ class _HomePageState extends State<HomePage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          'My ToDo',
+          'S-ToDo: Simple ToDo',
           style: FontStyles.poppins.copyWith(
             fontWeight: FontWeight.w700,
             fontSize: 18,
