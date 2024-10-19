@@ -14,12 +14,11 @@ class DailyTasks extends TaskEvent {}
 class OverdueTasks extends TaskEvent {}
 
 class UpdateTaskAtIndex extends TaskEvent {
-  final String id;
   final TaskModel model;
-  const UpdateTaskAtIndex(this.id, this.model);
+  const UpdateTaskAtIndex(this.model);
 
   @override
-  List<Object> get props => [id, model];
+  List<Object> get props => [model];
 }
 
 class ChangeTaskAtIndex extends TaskEvent {

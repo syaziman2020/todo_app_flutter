@@ -230,6 +230,7 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        controller.clear();
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -515,6 +516,7 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        controller.clear();
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -551,7 +553,6 @@ class _HomePageState extends State<HomePage> {
                         } else {
                           context.read<TaskBloc>().add(
                                 UpdateTaskAtIndex(
-                                  id,
                                   TaskModel(
                                     uid: id,
                                     title: controller.text,

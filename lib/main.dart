@@ -12,11 +12,15 @@ import 'data/models/task_model.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
-void callbackDispatcher() {
+void callbackDispatcher() async {
   Workmanager().executeTask((task, inputData) async {
     LocalDatasource localDatasource = LocalDatasource();
-    print("Task started: $task");
-    await localDatasource.changeTaskClosedApp();
+
+    if (task == "simplePeriodicTask") {
+      print("Executing simplePeriodicTask");
+
+      await localDatasource.changeTaskClosedApp();
+    }
 
     return Future.value(true);
   });
@@ -46,7 +50,16 @@ void main() async {
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.requestNotificationsPermission();
-  Workmanager().initialize(callbackDispatcher);
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false,
+  );
+  Workmanager().registerPeriodicTask(
+    "daily-task-identifier",
+    "simplePeriodicTask",
+    frequency: const Duration(hours: 3),
+  );
+
   runApp(const MyApp());
 }
 

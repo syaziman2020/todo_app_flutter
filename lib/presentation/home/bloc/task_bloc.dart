@@ -97,7 +97,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<UpdateTaskAtIndex>(
       (event, emit) async {
         try {
-          await localDatasource.updateTaskAtIndex(event.id, event.model);
+          await localDatasource.updateTaskAtIndex(event.model);
 
           final List<TaskModel?> tasks = await localDatasource.getAllTasks();
           emit(TaskUpdatedSuccess());

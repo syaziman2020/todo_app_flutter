@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/task_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest.dart' as tl;
 
 class LocalDatasource {
   var uuid = const Uuid();
@@ -15,6 +18,7 @@ class LocalDatasource {
       if (await Permission.scheduleExactAlarm.isGranted) {
         if (task.remind != null) {
           var remindDateTime = task.remind!;
+          var selectDateTime = task.dateTime!;
 
           var jakarta = tz.getLocation('Asia/Jakarta');
 
@@ -38,9 +42,9 @@ class LocalDatasource {
           );
 
           await flutterLocalNotificationsPlugin.zonedSchedule(
-            0,
+            task.uid.hashCode,
             'Reminder ${task.title}',
-            'You have a task for ${remindDateTime.hour}:${remindDateTime.minute.toString().padLeft(2, '0')}',
+            'You have a task for ${selectDateTime.hour}:${selectDateTime.minute.toString().padLeft(2, '0')}',
             time,
             platformChannelSpecifics,
             androidScheduleMode: AndroidScheduleMode.exact,
@@ -77,17 +81,26 @@ class LocalDatasource {
         status: model.status,
         repeat: model.repeat,
       );
-      showNotificationAtReminder(newTask);
+      if (newTask.status == false) {
+        await flutterLocalNotificationsPlugin.cancel(newTask.uid.hashCode);
+      } else {
+        await showNotificationAtReminder(newTask);
+      }
       await box.put(newTask.uid, newTask);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> updateTaskAtIndex(String id, TaskModel updatedTask) async {
+  Future<void> updateTaskAtIndex(TaskModel updatedTask) async {
     var box = await Hive.openBox('task');
-    showNotificationAtReminder(updatedTask);
-    await box.put(id, updatedTask);
+    if (updatedTask.status == true) {
+      await flutterLocalNotificationsPlugin.cancel(updatedTask.uid.hashCode);
+    } else {
+      showNotificationAtReminder(updatedTask);
+    }
+
+    await box.put(updatedTask.uid, updatedTask);
   }
 
   Future<void> updateTaskStatusAtIndex(String? id, bool newStatus) async {
@@ -143,16 +156,30 @@ class LocalDatasource {
         status: newStatus,
       );
 
+      if (newStatus == true) {
+        await flutterLocalNotificationsPlugin.cancel(updatedTask.uid.hashCode);
+      } else {
+        showNotificationAtReminder(currentTask);
+      }
+
       await box.put(id, updatedTask);
     }
   }
 
   Future<void> deleteTaskAtIndex(String id) async {
     var box = await Hive.openBox('task');
+
+    await flutterLocalNotificationsPlugin.cancel(id.hashCode);
+
     await box.delete(id);
   }
 
   Future<void> changeTaskClosedApp() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final appDocumentDirectory = await getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDirectory.path);
+    tl.initializeTimeZones();
+    Hive.registerAdapter(TaskModelAdapter());
     var box = await Hive.openBox('task');
     List<TaskModel?> tasks = box.values.toList().cast<TaskModel?>();
     List<TaskModel?> repeatedTasks =
