@@ -82,9 +82,9 @@ class LocalDatasource {
         repeat: model.repeat,
       );
       if (newTask.status == false) {
-        await flutterLocalNotificationsPlugin.cancel(newTask.uid.hashCode);
-      } else {
         await showNotificationAtReminder(newTask);
+      } else {
+        await flutterLocalNotificationsPlugin.cancel(newTask.uid.hashCode);
       }
       await box.put(newTask.uid, newTask);
     } catch (e) {

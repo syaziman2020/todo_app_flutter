@@ -17,8 +17,6 @@ void callbackDispatcher() async {
     LocalDatasource localDatasource = LocalDatasource();
 
     if (task == "simplePeriodicTask") {
-      print("Executing simplePeriodicTask");
-
       await localDatasource.changeTaskClosedApp();
     }
 

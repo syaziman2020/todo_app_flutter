@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showDialogInput(BuildContext context) {
+    String? errorMessage;
     showDialog(
       context: context,
       builder: (context) {
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.repeat_rounded),
+                        Text('Repeat', style: FontStyles.poppins),
                         SizedBox(
                           width: 30,
                           height: 30,
@@ -221,6 +222,37 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+                if (errorMessage != null) ...{
+                  Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 7, horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error,
+                          color: AppColors.white,
+                        ),
+                        6.w,
+                        Expanded(
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            errorMessage ?? '',
+                            softWrap: true,
+                            style: FontStyles.poppins
+                                .copyWith(color: AppColors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                }
               ],
             ),
             actions: [
@@ -259,18 +291,25 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (controller.text.trim().isEmpty) {
-                          snackBarCustom(
-                              context, 'Task is empty, please input your task');
+                          setState(() {
+                            errorMessage =
+                                'Task is empty, please input your task';
+                          });
                         } else if (selectedDateTime == null) {
-                          snackBarCustom(
-                              context, 'Please select your datetime');
+                          setState(() {
+                            errorMessage = 'Please select your datetime';
+                          });
                         } else if (selectedDateTime!.isBefore(DateTime.now())) {
-                          snackBarCustom(context,
-                              'The selected date and time have passed. Please choose a valid time.');
+                          setState(() {
+                            errorMessage =
+                                'The selected date and time have passed. Please choose a valid time.';
+                          });
                         } else if (selectedRemind != null &&
                             selectedRemind!.isBefore(DateTime.now())) {
-                          snackBarCustom(context,
-                              'The selected date and time have passed. Please choose a valid time.');
+                          setState(() {
+                            errorMessage =
+                                'The selected date and time have passed. Please choose a valid time.';
+                          });
                         } else {
                           context.read<TaskBloc>().add(
                                 AddTask(
@@ -321,6 +360,7 @@ class _HomePageState extends State<HomePage> {
     DateTime? selectedDateTime,
   }) {
     controller.text = task;
+    String? errorMessage;
     showDialog(
       context: context,
       builder: (context) {
@@ -427,7 +467,7 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.repeat_rounded),
+                        Text('Repeat', style: FontStyles.poppins),
                         SizedBox(
                           width: 30,
                           height: 30,
@@ -507,6 +547,37 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+                if (errorMessage != null) ...{
+                  Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 7, horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error,
+                          color: AppColors.white,
+                        ),
+                        6.w,
+                        Expanded(
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            errorMessage ?? '',
+                            softWrap: true,
+                            style: FontStyles.poppins
+                                .copyWith(color: AppColors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                }
               ],
             ),
             actions: [
@@ -545,11 +616,14 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (controller.text.trim().isEmpty) {
-                          snackBarCustom(
-                              context, 'Task is empty, please input your task');
+                          setState(() {
+                            errorMessage =
+                                'Task is empty, please input your task';
+                          });
                         } else if (selectedDateTime == null) {
-                          snackBarCustom(
-                              context, 'Please select your datetime');
+                          setState(() {
+                            errorMessage = 'Please select your datetime';
+                          });
                         } else {
                           context.read<TaskBloc>().add(
                                 UpdateTaskAtIndex(
@@ -717,9 +791,7 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: BlocConsumer<TaskBloc, TaskState>(
               listener: (context, state) {
-                if (state is TaskError) {
-                  snackBarCustom(context, state.message);
-                } else if (state is TaskAddedSuccess) {
+                if (state is TaskAddedSuccess) {
                   controller.clear();
                   Navigator.pop(context);
                   snackBarCustom(context, "Task added", status: true);
